@@ -32,3 +32,7 @@ security:
       scope: all
     resource:
       token-info-uri: http://localhost:8081/oauth/check_token
+      
+      
+url:
+  auth-server: http://localhost:8081/ping

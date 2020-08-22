@@ -16,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 @RequestMapping("/api/v1")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UsersController {
-
 	
 	@Autowired
 	UsersService usersService;

@@ -1,19 +1,14 @@
 package com.clone.twitter.config;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.jboss.logging.Logger;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.ContentCachingResponseWrapper;
-import org.springframework.web.util.WebUtils;
 
 @Component
 public class LoggingUtils {
@@ -26,7 +21,7 @@ public class LoggingUtils {
 		String httpHeaders = httpRequest.getHeaders().toSingleValueMap().toString();
 		String requestBody = body.toString();
 
-		trace(httpMethod, url, httpHeaders, requestBody, "INCOMING");
+		trace(httpMethod, url, httpHeaders, requestBody, "OUTGOING");
 	}
 
 	public void traceResponse(HttpRequest httpRequest, byte[] body) throws IOException {
@@ -35,7 +30,7 @@ public class LoggingUtils {
 		String httpHeaders = httpRequest.getHeaders().toSingleValueMap().toString();
 		String requestBody = body.toString();
 
-		trace(httpMethod, url, httpHeaders, requestBody, "OUTGOING");
+		trace(httpMethod, url, httpHeaders, requestBody, "INCOMING RESPONSE");
 	}
 
 	public void preHandle(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -57,10 +52,6 @@ public class LoggingUtils {
 		trace(httpMethod, url, sbHeaders.toString(), requestBody, "INCOMING");
 	}
 
-	public void postHandle(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		
-	}
-
 	private void trace(String httpMethod, String url, String httpHeaders, String requestBody, String requestType) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("\n");
@@ -70,5 +61,9 @@ public class LoggingUtils {
 		sb.append("[REQUEST BODY]").append("[").append(requestBody==null? "" : requestBody).append("]");
 		if(requestType.equals("INCOMING"))
 			logger.info("Incoming request: "+sb.toString());
+		else if(requestType.equals("OUTGOING"))
+			logger.info("Outgoing Request: "+sb.toString());
+		else if(requestType.equals("INCOMING RESPONSE"))
+			logger.info("Incoming response : "+requestBody);
 	}
 }

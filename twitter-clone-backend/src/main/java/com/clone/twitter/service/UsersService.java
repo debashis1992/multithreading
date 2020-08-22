@@ -20,7 +20,6 @@ public class UsersService {
 	@Autowired
 	UsersRepository usersRepository;
 	
-	
 	public List<UsersEntity> findAllUsers() {
 		log.info("Fetching the list of users present...");
 		return usersRepository.findAll();
