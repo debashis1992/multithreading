@@ -33,10 +33,11 @@ import org.bouncycastle.util.io.TeeOutputStream;
 import org.jboss.logging.Logger;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class RequestResponseLoggingFilter implements Filter {
-	
-	private static final Logger log = Logger.getLogger(RequestResponseLoggingFilter.class);
 
 	@Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -52,7 +53,7 @@ public class RequestResponseLoggingFilter implements Filter {
             Map<String, String> requestMap = this
                     .getTypesafeRequestMap(httpServletRequest);
             
-            Map<String,String> requestHeaders = this.getRequestHeaders(httpServletRequest);
+            Map<String,String> requestHeaders = this.getTypeSafeRequestHeaders(httpServletRequest);
             BufferedRequestWrapper bufferedRequest = new BufferedRequestWrapper(
                     httpServletRequest);
             BufferedResponseWrapper bufferedResponse = new BufferedResponseWrapper(
@@ -63,19 +64,16 @@ public class RequestResponseLoggingFilter implements Filter {
                     .append(httpServletRequest.getMethod())
                     .append("]\n[PATH INFO:")
                     .append(httpServletRequest.getServletPath())
-                    .append("]\n[REQUEST PARAMETERS:").append(requestMap)
                     .append("]\n[REQUEST HEADERS:").append(requestHeaders)
+                    .append("]\n[REQUEST PARAMS:").append(requestMap)
                     .append("]\n[REQUEST BODY:")
                     .append(bufferedRequest.getRequestBody())
                     .append("]\n[REMOTE ADDRESS:")
                     .append(httpServletRequest.getRemoteAddr()).append("]");
-            log.info(logMessage);
+            log.info(logMessage.toString());
 
             filter.doFilter(bufferedRequest, bufferedResponse);
-            logMessage = new StringBuilder();
-            logMessage.append("Outgoing Response: \n")
-                    .append(bufferedResponse.getContent()).append("]");
-            log.info(logMessage.toString());
+            log.info("Outgoing Response: \n"+bufferedResponse.getContent().concat("]"));
         } catch (Throwable a) {
             log.error(a.getMessage());
         }
@@ -86,18 +84,13 @@ public class RequestResponseLoggingFilter implements Filter {
         Enumeration<?> requestParamNames = request.getParameterNames();
         while (requestParamNames.hasMoreElements()) {
             String requestParamName = (String) requestParamNames.nextElement();
-            String requestParamValue;
-            if (requestParamName.equalsIgnoreCase("password")) {
-                requestParamValue = "********";
-            } else {
-                requestParamValue = request.getParameter(requestParamName);
-            }
+            String requestParamValue = request.getParameter(requestParamName);
             typesafeRequestMap.put(requestParamName, requestParamValue);
         }
         return typesafeRequestMap;
     }
     
-    private Map<String,String> getRequestHeaders(HttpServletRequest request) {
+    private Map<String,String> getTypeSafeRequestHeaders(HttpServletRequest request) {
     	Map<String,String> requestHeaders = new HashMap<>();
     	Enumeration<String> requestHeaderNames = request.getHeaderNames();
     	while(requestHeaderNames.hasMoreElements()) {
