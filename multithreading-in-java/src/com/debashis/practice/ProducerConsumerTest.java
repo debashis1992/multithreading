@@ -6,11 +6,11 @@ public class ProducerConsumerTest {
 	public static void main(String[] args) {
 
 		Q q = new Q();
-		Thread t1 = new Thread(new Producer(q), "producer");
-		Thread t2 = new Thread(new Consumer(q), "consumer");
+		Thread t1 = new Thread(new Producer(q), "producer thread");
+		Thread t2 = new Thread(new Consumer(q), "consumer thread");
 
-		t1.start();
-		t2.start();
+		t1.start();	// start producer thread
+		t2.start();	// start consumer thread
 		try {
 			t1.join();
 			t2.join();
