@@ -1,5 +1,8 @@
 package com.debashis.practice;
 
+/*
+To print odd and even numbers using 2 different threads.
+ */
 
 public class Test2 {
 
